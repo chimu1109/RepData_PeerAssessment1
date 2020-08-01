@@ -7,7 +7,7 @@ output:
 
 
 ## Loading and preprocessing the data
-1. Code for loading the required libraries and the data.  
+1.Code for loading the required libraries and the data.  
 
 ```r
 ## Loading libraries
@@ -124,7 +124,7 @@ activity <- read_csv("activity.zip")
 ## )
 ```
 
-2. Processing the data(including all the procesing for further analyses)  
+2.Processing the data(including all the procesing for further analyses)  
 
 ```r
 a1 <- tapply(activity$steps, activity$date, sum, na.rm = TRUE)
@@ -132,15 +132,16 @@ a2 <- tapply(activity$steps, activity$interval, mean, na.rm = TRUE)
 ```
 
 ## What is mean total number of steps taken per day?
-1. Following is the histogram for the total number of steps taken everyday  
+1.Following is the histogram for the total number of steps taken everyday  
 
 ```r
 hist(a1)
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+  
 The histogram shows the frequency of the total number of steps taken everyday  
-2. Followng is the mean and median of the total number of steps taken everyday  
+2.Followng is the mean and median of the total number of steps taken everyday  
 
 ```r
 mean(a1)
@@ -159,7 +160,7 @@ median(a1)
 ```
 
 ## What is the average daily activity pattern?
-1. Following is the code for the time series plot of the total number of steps taken everyday  
+1.Following is the code for the time series plot of the total number of steps taken everyday  
 
 ```r
 plot(a2, type = "l", lwd = 2)
@@ -189,13 +190,13 @@ sum(is.na(activity$steps))
 ## [1] 2304
 ```
 
-2. The missing values are replaced with the mean of the corresponding 5-minute interval  
+2.The missing values are replaced with the mean of the corresponding 5-minute interval  
 
 ```r
 activity2 <- activity %>%
-        group_by(interval) %>%
-        mutate_each(funs(replace(., which(is.na(.)), mean(., na.rm=TRUE))), 
-                                       +                   starts_with('steps'))
+group_by(interval) %>%
+mutate_each(funs(replace(., which(is.na(.)), mean(., na.rm=TRUE))),
++                   starts_with('steps'))
 ```
 
 ```
@@ -221,24 +222,25 @@ activity2 <- activity %>%
 ## Call `lifecycle::last_warnings()` to see where this warning was generated.
 ```
 
-3. A new dataset called activity2 is created after imputing the missing values  
+3.A new dataset called activity2 is created after imputing the missing values  
 
-4. Histogram of the total number of steps taken everyday after imputing the values is as follows:  
+4.Histogram of the total number of steps taken everyday after imputing the values is as follows:  
 
 ```r
-a3 <- tapply(activity$steps, activity$date, sum, na.rm = TRUE)
+a3 <- tapply(activity2$steps, activity2$date, sum, na.rm = TRUE)
 hist(a3)
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
- The mean and median of the total steps taken everyday in the new dataset is as follows:  
+   
+The mean and median of the total steps taken everyday in the new dataset is as follows:  
 
 ```r
 mean(a3)
 ```
 
 ```
-## [1] 9354.23
+## [1] 10766.19
 ```
 
 ```r
@@ -246,11 +248,12 @@ median(a3)
 ```
 
 ```
-## [1] 10395
+## [1] 10766.19
 ```
-
+  
+Imputing the data in the dataset has made the mean and median increase.  
 ## Are there differences in activity patterns between weekdays and weekends?
-1. A new factor variable is created with two levels : Weekdays & weekends  
+1.A new factor variable is created with two levels : Weekdays & weekends  
 
 ```r
 weekday1 <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
@@ -258,7 +261,7 @@ activity2 <- mutate(activity2, holiday = factor((weekdays(date) %in% weekday1),
                                                 levels=c(FALSE, TRUE), labels=c('weekend', 'weekday') ))
 ```
 
-2. Plotting the average of the steps taken in each 5-minute interval according to the factor variable holiday:  
+2.Plotting the average of the steps taken in each 5-minute interval according to the factor variable holiday:  
 
 ```r
 act2 <- group_by(activity2, holiday, interval) %>% summarise(steps = mean(steps))
@@ -269,7 +272,7 @@ act2 <- group_by(activity2, holiday, interval) %>% summarise(steps = mean(steps)
 ```
 
 ```r
-ggplot(na.omit(act2), aes(x = interval, y = steps)) + geom_line() + facet_wrap(.~holiday, nrow = 2)
+ggplot(na.omit(act2), aes(x = interval, y = steps)) + geom_line(lwd=1.2) + facet_wrap(.~holiday, nrow = 2) + theme_bw()
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-12-1.png)<!-- -->

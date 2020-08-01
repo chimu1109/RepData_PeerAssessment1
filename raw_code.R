@@ -23,10 +23,11 @@ which.max(a2)
 ## Part 3
 sum(is.na(activity$steps))
 activity2 <- activity %>%
-        group_by(interval) %>%
-        mutate_each(funs(replace(., which(is.na(.)), mean(., na.rm=TRUE))), 
-                                       +                   starts_with('steps'))
-a3 <- tapply(activity$steps, activity$date, sum, na.rm = TRUE)
+group_by(interval) %>%
+mutate_each(funs(replace(., which(is.na(.)), mean(., na.rm=TRUE))),
++                   starts_with('steps'))
+
+a3 <- tapply(activity2$steps, activity2$date, sum, na.rm = TRUE)
 hist(a3)
 mean(a3)
 median(a3)
@@ -37,7 +38,7 @@ activity2 <- mutate(activity2, holiday = factor((weekdays(date) %in% weekday1),
                                                 levels=c(FALSE, TRUE), labels=c('weekend', 'weekday') ))
 
 act2 <- group_by(activity2, holiday, interval) %>% summarise(steps = mean(steps))
-ggplot(na.omit(act2), aes(x = interval, y = steps)) + geom_line() + facet_wrap(.~holiday, nrow = 2)
+ggplot(na.omit(act2), aes(x = interval, y = steps)) + geom_line(lwd=1.2) + facet_wrap(.~holiday, nrow = 2)
 
 
 
