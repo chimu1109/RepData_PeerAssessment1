@@ -7,19 +7,84 @@ output:
 
 
 ## Loading and preprocessing the data
+1. Code for loading the required libraries and the data.  
+```{r}
+## Loading libraries
+library(readr)
+library(plyr)
+library(dplyr)
+library(Hmisc)
 
+## Reading the data
+activity <- read_csv("activity.zip")
+```
 
+2. Processing the data(including all the procesing for further analyses)  
+```{r}
+a1 <- tapply(activity$steps, activity$date, sum, na.rm = TRUE)
+a2 <- tapply(activity$steps, activity$interval, mean, na.rm = TRUE)
+```
 
 ## What is mean total number of steps taken per day?
-
-
+1. Following is the histogram for the total number of steps taken everyday  
+```{r}
+hist(a1)
+```
+The histogram shows the frequency of the total number of steps taken everyday  
+2. Followng is the mean and median of the total number of steps taken everyday  
+```{r}
+mean(a1)
+median(a1)
+```
 
 ## What is the average daily activity pattern?
+1. Following is the code for the time series plot of the total number of steps taken everyday  
+```{r}
+plot(a2, type = "l", lwd = 2)
+```
 
-
+2.The 5-minute interval which has highest avergave on all days is  
+```{r}
+which.max(a2)
+```
 
 ## Imputing missing values
+1.The total number of missing values in the dataset are:  
+```{r}
+sum(is.na(activity$steps))
+```
 
+2. The missing values are replaced with the mean of the corresponding 5-minute interval  
+```{r}
+activity2 <- activity %>%
+        group_by(interval) %>%
+        mutate_each(funs(replace(., which(is.na(.)), mean(., na.rm=TRUE))), 
+                                       +                   starts_with('steps'))
+```
 
+3. A new dataset called activity2 is created after imputing the missing values  
+
+4. Histogram of the total number of steps taken everyday after imputing the values is as follows:  
+```{r}
+a3 <- tapply(activity$steps, activity$date, sum, na.rm = TRUE)
+hist(a3)
+```
+ The mean and median of the total steps taken everyday in the new dataset is as follows:  
+```{r}
+mean(a3)
+median(a3)
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+1. A new factor variable is created with two levels : Weekdays & weekends  
+```{r}
+weekday1 <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
+activity2 <- mutate(activity2, holiday = factor((weekdays(date) %in% weekday1), 
+                                                levels=c(FALSE, TRUE), labels=c('weekend', 'weekday') ))
+```
+
+2. Plotting the average of the steps taken in each 5-minute interval according to the factor variable holiday:  
+```{r}
+act2 <- group_by(activity2, holiday, interval) %>% summarise(steps = mean(steps))
+ggplot(na.omit(act2), aes(x = interval, y = steps)) + geom_line() + facet_wrap(.~holiday, nrow = 2)
+```
